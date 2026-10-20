@@ -50,6 +50,21 @@ program
     });
 
 program
+    .command('item <id>')
+    .description('вивести детальну інформацію про страву за ID')
+    .action((id) => {
+        const data = loadData(program.opts().file);
+        const dishes = getAllDishes(data);
+        const dish = dishes.find(d => d.id === id);
+
+        if (!dish) {
+            console.error(`Страва з ID "${id}" не знайдена.`);
+            process.exit(1);
+        }
+        console.log(JSON.stringify(dish, null, 2));
+    });
+
+program
     .command('field <id> <fieldPath>')
     .description('вивести значення конкретного поля страви за ID')
     .action((id, fieldPath) => {
