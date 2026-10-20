@@ -33,4 +33,48 @@ function getAllDishes(data) {
     return dishes;
 }
 
+program
+    .command('list')
+    .description('вивести список усіх страв у меню')
+    .option('-l, --limit <number>', 'обмежити кількість елементів', parseInt)
+    .action((options) => {
+        const data = loadData(program.opts().file);
+        let dishes = getAllDishes(data);
+        if (options.limit && !isNaN(options.limit)) {
+            dishes = dishes.slice(0, options.limit);
+        }
+        console.log(`--- Список страв (всього: ${dishes.length}) ---`);
+        dishes.forEach(d => {
+            console.log(`ID: ${d.id} | Назва: ${d.name} | Ціна: ${d.price} грн | Категорія: ${d.categoryName}`);
+        });
+    });
+
+program
+    .command('field <id> <fieldPath>')
+    .description('вивести значення конкретного поля страви за ID')
+    .action((id, fieldPath) => {
+        const data = loadData(program.opts().file);
+        const dishes = getAllDishes(data);
+        const dish = dishes.find(d => d.id === id);
+
+        if (!dish) {
+            console.error(`Страва за ID "${id}" не знайдена.`);
+            process.exit(1);
+        }
+
+        const keys = fieldPath.split('.');
+        let result = dish;
+        for (const key of keys) {
+            if (result && Object.ptototype.hasOwnProperty.call(result, key)) {
+                result = result[key];
+            } else {
+                console.error(`Поле "${FieldPath}" не знайдено у страві.`);
+                process.exit(1);
+            }
+        }
+
+        console.log(typeof result === 'object' ? JSON.strindify(result, null, 2) : result);
+    });
+
+
 program.parse(process.argv);
