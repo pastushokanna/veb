@@ -91,5 +91,21 @@ program
         console.log(typeof result === 'object' ? JSON.strindify(result, null, 2) : result);
     });
 
+program
+    .command('category <categoryID>')
+    .description('вивести список страв у конкретній категорії за її ID')
+    .action((categoryId) => {
+        const data = loadData(program.opts().file);
+        const category = data.categories?.find(c => c.id === categoryId);
+
+        if (!category) {
+            console.error(`Категорія з ID "${categoryId}" не знайдена.`);
+            process.exit(1);
+        }
+        console.log(`--- Категорія:${category.name} (ID: ${category.id}) ---`);
+        category.dishes.forEach(d => {
+            console.log(`ID: ${d.id} | Назва: ${d.name} | Ціна: ${d.price} грн`);
+        });
+    });
 
 program.parse(process.argv);
