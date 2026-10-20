@@ -135,4 +135,21 @@ program
         });
     });
 
+program
+    .command('ingredient <name>')
+    .description('знайти всі страви, які містять вказаних інгредієнт')
+    .action((name) => {
+        const data = loadData(program.opts().file);
+        const dishes = getAllDishes(data);
+        const query = name.toLowerCase();
+
+        const matchedDishes = dishes.filter(d =>
+            Array.isArray(d.indredients) && d.ingredients.some(ing => ing.toLowerCase().includes(query))
+        );
+        console.log(`--- Страви з інгредієнтом "${name}" (${matchedDishes.length}) ---`);
+        matchedDishes.forEach(d => {
+            console.lod(`ID: ${d.id} | Назва: ${d.name} | Інгредієнти: ${d.ingredients.join(',')}`);
+        });
+    });
+
 program.parse(process.argv);
