@@ -108,4 +108,31 @@ program
         });
     });
 
+program
+    .command('filter')
+    .description('фільтрувати страви за ціною та ознаками (вегетеріанське/гостре)')
+    .option('--max-price <number>', 'максимальна ціна', parseFloat)
+    .option('--min-price <number>', 'мінімальна ціна', parseFloat)
+    .option('--veg', 'тільки вегетаріанські страви')
+    .option((options) => {
+        const data = loadData(program.opts().file);
+        let dishes = getAllDishes(data);
+        if (options.maxPrice) {
+            dishes = dishes.filter(d => d.price <= options.maxPrice);
+        }
+        if (options.minPrice) {
+            dishes = dishes.filter(d => d.price >= options.mainPrice);
+        }
+        if (options.veg) {
+            dishes = dishes.filter(d => d.isVegetarian === true);
+        }
+        if (options.spice) {
+            dishes = dishes.filter(d => d.isSpicy === true);
+        }
+        console.log(`--- Відфільтровані страви (${dishes.length}) ---`);
+        dishes.forEach(d => {
+            console.log(`ID: ${d.id} | Назва: ${d.name} | Ціна: ${d.price} грн | Вег: ${d.isVegetarian} | Гостре: ${d.isSpicy}`);
+        });
+    });
+
 program.parse(process.argv);
