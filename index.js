@@ -80,19 +80,19 @@ program
         const keys = fieldPath.split('.');
         let result = dish;
         for (const key of keys) {
-            if (result && Object.ptototype.hasOwnProperty.call(result, key)) {
+            if (result && Object.prototype.hasOwnProperty.call(result, key)) {
                 result = result[key];
             } else {
-                console.error(`Поле "${FieldPath}" не знайдено у страві.`);
+                console.error(`Поле "${fieldPath}" не знайдено у страві.`);
                 process.exit(1);
             }
         }
 
-        console.log(typeof result === 'object' ? JSON.strindify(result, null, 2) : result);
+        console.log(typeof result === 'object' ? JSON.stringify(result, null, 2) : result);
     });
 
 program
-    .command('category <categoryID>')
+    .command('category <categoryId>')
     .description('вивести список страв у конкретній категорії за її ID')
     .action((categoryId) => {
         const data = loadData(program.opts().file);
@@ -114,14 +114,15 @@ program
     .option('--max-price <number>', 'максимальна ціна', parseFloat)
     .option('--min-price <number>', 'мінімальна ціна', parseFloat)
     .option('--veg', 'тільки вегетаріанські страви')
-    .option((options) => {
+    .option('--spicy', 'тільки гострі страви')
+    .action((options) => {
         const data = loadData(program.opts().file);
         let dishes = getAllDishes(data);
         if (options.maxPrice) {
             dishes = dishes.filter(d => d.price <= options.maxPrice);
         }
         if (options.minPrice) {
-            dishes = dishes.filter(d => d.price >= options.mainPrice);
+            dishes = dishes.filter(d => d.price >= options.minPrice);
         }
         if (options.veg) {
             dishes = dishes.filter(d => d.isVegetarian === true);
@@ -144,11 +145,11 @@ program
         const query = name.toLowerCase();
 
         const matchedDishes = dishes.filter(d =>
-            Array.isArray(d.indredients) && d.ingredients.some(ing => ing.toLowerCase().includes(query))
+            Array.isArray(d.ingredients) && d.ingredients.some(ing => ing.toLowerCase().includes(query))
         );
         console.log(`--- Страви з інгредієнтом "${name}" (${matchedDishes.length}) ---`);
         matchedDishes.forEach(d => {
-            console.lod(`ID: ${d.id} | Назва: ${d.name} | Інгредієнти: ${d.ingredients.join(',')}`);
+            console.log(`ID: ${d.id} | Назва: ${d.name} | Інгредієнти: ${d.ingredients.join(',')}`);
         });
     });
 
